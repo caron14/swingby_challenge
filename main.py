@@ -22,9 +22,8 @@ def main():
     """
     v_inf = 5.0  # 5.0
     t_twobody = 0.2  # 0.2
-    num_step_in_t_twobody = 200  # 200
-    t_Nbody = 1.75  # 2
-    num_step_in_t_Nbody = 200  # 200
+    t_Nbody = 0.4  # 2
+    delta_t = 1 / 365
     delta_V = [0.0055, 0.]  # Vx, Vy, [0.0055, 0]
 
     """
@@ -35,9 +34,8 @@ def main():
         OUTPUT_PATH=OUTPUT_PATH,
         v_inf=v_inf,
         t_twobody=t_twobody,
-        num_step_in_t_twobody=num_step_in_t_twobody,
         t_Nbody=t_Nbody,
-        num_step_in_t_Nbody=num_step_in_t_Nbody,
+        delta_t=delta_t,
         delta_V=delta_V,
     )
 

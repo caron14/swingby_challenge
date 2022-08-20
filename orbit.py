@@ -16,9 +16,8 @@ def spacecraft_orbit(
         OUTPUT_PATH=None,
         v_inf=None,
         t_twobody=None,
-        num_step_in_t_twobody=None,
         t_Nbody=None,
-        num_step_in_t_Nbody=None,
+        delta_t=None,
         delta_V=None,
     ):
     """
@@ -64,8 +63,10 @@ def spacecraft_orbit(
           最初は太陽との二体問題で解かないと計算が発散する
     """
     x0 = np.array([r_earth, 0.0, -v_sc_x, v_sc_y])  # 位置(km), 速度(km/s)
-    t_span = np.linspace(0, t_twobody*365*24*60*60,
-                         num_step_in_t_twobody)  # {t_twobody}年分を{num_step_in_t_twobody}ステップで刻む
+
+    num_step = int(t_twobody / delta_t)
+    tot_time = t_twobody*365*24*60*60  # (sec): year to sec
+    t_span = np.linspace(0, tot_time, num_step)
     # (x, y, vx, vy) --> (time step, each coord and velocity components)
     sol_0to1 = odeint(orbital_equation_of_motion_twobody, x0, t_span)
 
@@ -74,9 +75,12 @@ def spacecraft_orbit(
     """
     # 軌道伝播された位置・速度に軌道制御(ΔV)を加える
     x1 = sol_0to1[-1, :] + [0, 0, delta_Vx, delta_Vy]
-    # 0.2年〜2年分を200ステップで刻む
+
+    num_step = int(t_Nbody / delta_t)
+    tot_time = t_Nbody*365*24*60*60 - t_twobody*365*24*60*60  # (sec): year to sec
+    # {t_twobody}年〜{t_Nbody}年分を200ステップで刻む
     t_span1 = np.linspace(t_twobody*365*24*60*60,
-                          t_Nbody*365*24*60*60, num_step_in_t_Nbody)
+                          t_Nbody*365*24*60*60, num_step)
     theta1 = 0*(np.pi/180)  # 0degと設定, deg -> rad
     sol_1to2 = odeint(orbital_equation_of_motion_nbody,
                       x1, t_span1, args=(theta1,))  # argsの要素が1つの時は ","を忘れないこと
