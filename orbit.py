@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 
 from utils import transform_to_rotating_coordinate_system
-from swingby import orbital_equation_of_motion_twobody
-from swingby import orbital_equation_of_motion_nbody
+from equation_of_motion import orbital_equation_of_motion_twobody
+from equation_of_motion import orbital_equation_of_motion_nbody
 
 
 
@@ -117,19 +117,19 @@ def spacecraft_orbit(
     #          color='blue', linestyle='--', label="Earth")
     plt.plot(x_e, y_e, color='blue', linestyle='--', label="Earth")
     # Spacecraft: 0 ~ {t_twobody}
-    _x, _y = transform_to_rotating_coordinate_system(
-        x=sol_0to1[:, 0], y=sol_0to1[:, 1],
-        omega=omega, time=t_span_twobody,
-    )
-    plt.plot(_x, _y, color='red', label="two-body problem")
-    # plt.plot(sol_0to1[:, 0], sol_0to1[:, 1], color='red', label="two-body problem")
+    # _x, _y = transform_to_rotating_coordinate_system(
+    #     x=sol_0to1[:, 0], y=sol_0to1[:, 1],
+    #     omega=omega, time=t_span_twobody,
+    # )
+    # plt.plot(_x, _y, color='red', label="two-body problem")
+    plt.plot(sol_0to1[:, 0], sol_0to1[:, 1], color='red', label="two-body problem")
     # Spacecraft: 0 ~ {t_Nbody}
-    _x, _y = transform_to_rotating_coordinate_system(
-        x=sol_1to2[:, 0], y=sol_1to2[:, 1],
-        omega=omega, time=t_span_Nbody,
-    )
-    plt.plot(_x, _y, color='green', label="N-body problem")
-    # plt.plot(sol_1to2[:, 0], sol_1to2[:, 1], color='green', label="N-body problem")
+    # _x, _y = transform_to_rotating_coordinate_system(
+    #     x=sol_1to2[:, 0], y=sol_1to2[:, 1],
+    #     omega=omega, time=t_span_Nbody,
+    # )
+    # plt.plot(_x, _y, color='green', label="N-body problem")
+    plt.plot(sol_1to2[:, 0], sol_1to2[:, 1], color='green', label="N-body problem")
     plt.grid()  # 格子をつける
     plt.legend(bbox_to_anchor=(0.5, 1.025))  # loc="lower left"
     plt.gca().set_aspect('equal')  # グラフのアスペクト比を揃える
