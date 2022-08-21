@@ -64,6 +64,8 @@ def orbital_equation_of_motion_nbody(
     Args:
         x(ndarray): 天体の位置, km
         t(ndarray): 時刻ステップの配列
+        theta1(float): 初期位相
+
         GM(float): 万有引力定数×太陽の質量, km^3/s^(-2)
         GM1(float): 万有引力定数×地球の質量, km^3/s^(-2)
         period1(float): 地球の軌道周期, sec
@@ -77,7 +79,7 @@ def orbital_equation_of_motion_nbody(
 
     # 地球の位置
     r1 = np.array([a1*np.cos(2*np.pi*t/period1 + theta1), 
-                    a1*np.sin(2*np.pi*t/period1 + theta1)])
+                   a1*np.sin(2*np.pi*t/period1 + theta1)])
 
     # 運動方程式の計算
     d1 = x[0:2] - r1
