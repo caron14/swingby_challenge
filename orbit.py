@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import os
 from pathlib import Path
 import sys
@@ -16,10 +17,12 @@ def spacecraft_orbit(
         config=None,
         OUTPUT_PATH=None,
         v_inf=None,
+        dt_start=None,
         t_twobody=None,
         t_Nbody=None,
         delta_t=None,
         delta_V=None,
+        planet_list=None,
     ):
     """
     探査機の軌道
@@ -29,6 +32,7 @@ def spacecraft_orbit(
         OUTPUT_PATH: 出力先のPATH
         v_inf(float): 地球公転速度に対する探査機の相対速度V∞, km/s
             Note: ロケット打ち上げ能力に依存し、今回は v_inf < 5km/s を仮定
+        dt_start(datetime): 打ち上げ時刻情報
         t_twobody(float): 二体問題での軌道伝播の期間, year
             Note: 探査機と地球の初期位置の一致で数値発散を回避するため
                   0 < t_twobody < 1
@@ -90,7 +94,7 @@ def spacecraft_orbit(
                           t_Nbody*365*24*60*60, num_step)
     theta1 = 0*(np.pi/180)  # 0degと設定, deg -> rad
     sol_1to2 = odeint(orbital_equation_of_motion_nbody,
-                      x1, t_span_Nbody, args=(theta1,))  # argsの要素が1つの時は ","を忘れないこと
+                      x1, t_span_Nbody, args=(dt_start, planet_list))  # argsの要素が1つの時は ","を忘れないこと
 
 
     # 地球の軌道

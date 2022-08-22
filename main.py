@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 from pathlib import Path
 
@@ -21,10 +22,12 @@ def main():
     実験条件
     """
     v_inf = 5.0  # 5.0
+    start_date = '2022-09-01'
     t_twobody = 0.2  # 0.2
     t_Nbody = 0.5  # 2
     delta_t = 1 / 365
     delta_V = [0.0055, 0.]  # Vx, Vy, [0.0055, 0]
+    planet_list = ['venus', 'earth', 'mars']
 
     """
     探査機の軌道伝搬の計算
@@ -33,10 +36,12 @@ def main():
         config=config,
         OUTPUT_PATH=OUTPUT_PATH,
         v_inf=v_inf,
+        dt_start=datetime.strptime(start_date, '%Y-%m-%d'),
         t_twobody=t_twobody,
         t_Nbody=t_Nbody,
         delta_t=delta_t,
         delta_V=delta_V,
+        planet_list=planet_list,
     )
 
 
