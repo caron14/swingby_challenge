@@ -22,7 +22,7 @@ def main():
     """
     v_inf = 5.0  # 5.0
     t_twobody = 0.2  # 0.2
-    t_Nbody = 2.9  # 2
+    t_Nbody = 0.5  # 2
     delta_t = 1 / 365
     delta_V = [0.0055, 0.]  # Vx, Vy, [0.0055, 0]
 
