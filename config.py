@@ -36,6 +36,22 @@ class Config:
         'pluto': G * 13.105e21,
     }
 
+    """
+    惑星の平均半径(km)
+    """
+    dict_planet_radius = {
+        'sun': 696000,
+        'mercury': 2439.7,
+        'venus': 6051.8,
+        'earth': 6371,
+        'mars': 3390,
+        'jupiter': 69911,
+        'saturn': 58232,
+        'uranus': 25362,
+        'neptune': 24622,
+        'pluto': 1185,
+    }
+
 
 
 if __name__ == "__main__":

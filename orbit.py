@@ -90,11 +90,10 @@ def spacecraft_orbit(
     num_step = int(t_Nbody / delta_t)
     # tot_time = t_Nbody*365*24*60*60 - t_twobody*365*24*60*60  # (sec): year to sec
     # {t_twobody}年〜{t_Nbody}年分を200ステップで刻む
-    t_span_Nbody = np.linspace(t_twobody*365*24*60*60,
-                          t_Nbody*365*24*60*60, num_step)
-    theta1 = 0*(np.pi/180)  # 0degと設定, deg -> rad
+    t_span_Nbody = np.linspace(t_twobody*365*24*60*60, t_Nbody*365*24*60*60, num_step)
     sol_1to2 = odeint(orbital_equation_of_motion_nbody,
-                      x1, t_span_Nbody, args=(dt_start, planet_list))  # argsの要素が1つの時は ","を忘れないこと
+                      x1, t_span_Nbody, 
+                      args=(dt_start, planet_list, config.dict_GM, config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
 
 
     # 地球の軌道
