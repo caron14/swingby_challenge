@@ -23,14 +23,14 @@ def main():
     """
     v_inf = 5.0  # 5.0
     start_date = '2022-09-23'  # 地球でy=0となる時は開始日とする
-    travel_days = 100
-    delta_V = [
-        3, 
+    travel_days = [
+        91,
+        100,
     ]
-    t_twobody = 0.2  # 0.2
-    t_Nbody = 1.  # 2
-    delta_t = 1 / 365
-    delta_V = [0.0055, 0.]  # Vx, Vy, [0.0055, 0]
+    delta_V = [
+        [0., 0.],  # Vx, Vy
+        [0.0055, 0.],
+    ]
     planet_list = ['venus', 'earth', 'mars']
 
     """
@@ -42,9 +42,6 @@ def main():
         v_inf=v_inf,
         dt_start=datetime.strptime(start_date, '%Y-%m-%d'),
         travel_days=travel_days,
-        t_twobody=t_twobody,
-        t_Nbody=t_Nbody,
-        delta_t=delta_t,
         delta_V=delta_V,
         planet_list=planet_list,
     )

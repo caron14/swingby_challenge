@@ -23,9 +23,6 @@ def spacecraft_orbit(
         v_inf=None,
         dt_start=None,
         travel_days=None,
-        t_twobody=None,
-        t_Nbody=None,
-        delta_t=None,
         delta_V=None,
         planet_list=None,
     ):
@@ -38,15 +35,9 @@ def spacecraft_orbit(
         v_inf(float): 地球公転速度に対する探査機の相対速度V∞, km/s
             Note: ロケット打ち上げ能力に依存し、今回は v_inf < 5km/s を仮定
         dt_start(datetime): 打ち上げ時刻情報
-        t_twobody(float): 二体問題での軌道伝播の期間, year
-            Note: 探査機と地球の初期位置の一致で数値発散を回避するため
-                  0 < t_twobody < 1
-        num_step_in_t_twobody(int): 二体問題での軌道伝播の期間のステップ数
-        t_Nbody(float): N体問題での軌道伝播の期間, year
-            ex. 太陽-地球-探査機
-        num_step_in_t_Nbody(int): N体問題での軌道伝播の期間のステップ数
         delta_V(list, float): delta_Vx, delta_Vy
             軌道制御(ΔV)による速度変化
+        planet_list(list): 惑星リスト
     """
 
     """
@@ -74,17 +65,43 @@ def spacecraft_orbit(
     # 初期の位置(km), 速度(km/s)
     earth_coord_init = get_body_barycentric('earth', Time(dt_start))
     _x_e, _y_e = np.array(earth_coord_init.x), np.array(earth_coord_init.y)
-    # x0 = np.array([_x_e + 2*config.dict_planet_radius['earth'], _y_e, -v_sc_x, v_sc_y])
-    x0 = np.array([_x_e + 3*config.dict_planet_radius['earth'], _y_e, 0., config.v_earth + v_inf])
+    # x0 = np.array([_x_e + 1*config.dict_planet_radius['earth'], _y_e, -v_sc_x, v_sc_y])
+    x0 = np.array([_x_e + 1*config.dict_planet_radius['earth'], _y_e, 0., 1.29*config.v_earth])
 
-    # 0年〜{t_Nbody}年分を{travel_days}ステップで刻む
-    t_span_sec = np.arange(0, travel_days*24*60*60, 24*60*60, dtype=np.int64)
-    solution = odeint(orbital_equation_of_motion_nbody,
-                      x0, t_span_sec,
-                      args=(dt_start, planet_list, config.dict_GM, config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
-    
+    # # 0年〜{t_Nbody}年分を{travel_days}ステップで刻む
+    # t_span_sec = np.arange(0, travel_days*24*60*60, 24*60*60, dtype=np.int64)
+    # solution = odeint(orbital_equation_of_motion_nbody,
+    #                   x0, t_span_sec,
+    #                   args=(dt_start, planet_list, config.dict_GM, config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
+
+    solutions = []
+    for i, (_travel_days, _delta_V) in enumerate(zip(travel_days, delta_V)):
+        if i == 0:
+            # スタート時
+            t_span_sec = np.arange(0, _travel_days*24*60*60, 24*60*60, dtype=np.int64)
+            solution = odeint(orbital_equation_of_motion_nbody,
+                            x0, t_span_sec,
+                            args=(dt_start, planet_list, config.dict_GM, 
+                                config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
+            solutions.append(solution)
+            dt_next = dt_start + timedelta(days=_travel_days)
+            _t = t_span_sec[-1]
+        else:
+            # 軌道伝播された位置・速度に軌道制御(ΔV)を加える
+            x0 = solution[-1, :] + [0, 0, _delta_V[0], _delta_V[1]]
+
+            t_span_sec = np.arange(_t, _travel_days*24*60*60, 24*60*60, dtype=np.int64)
+            solution = odeint(orbital_equation_of_motion_nbody,
+                              x0, t_span_sec,
+                              args=(dt_start, planet_list, config.dict_GM,
+                                    config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
+            solutions.append(solution)
+            dt_next += timedelta(days=_travel_days)
+
     # 基準日からの飛行時間
-    dt_next = dt_start + timedelta(days=travel_days)
+    print(sum(travel_days))
+    print(travel_days)
+    dt_next = dt_start + timedelta(days=sum(travel_days))
     timeseries = pd.date_range(dt_start, dt_next, freq='D')
     # 基準日から飛行時間での各惑星の座標
     dict_planet_coord_timeseries = get_planet_coord_timeseries(timeseries, planet_list)
@@ -102,11 +119,14 @@ def spacecraft_orbit(
         plt.plot(_x, _y, label=_planet, linewidth=2)
         # plt.scatter(_x[0], _y[0], color='black', s=40)  # initial point
         plt.scatter(_x[-1], _y[-1], s=40)  # final point
-    # 
-    plt.plot(solution[:, 0], solution[:, 1], color='black', label="spacecraft")
-    plt.scatter(solution[-1, 0], solution[-1, 1], color='black')
+    # 探査機
+    for _solution in solutions:
+        plt.plot(_solution[:, 0], _solution[:, 1], color='black')
+    plt.scatter(solutions[-1][-1, 0], solutions[-1][-1, 1], color='black', label="spacecraft")
+    # plt.plot(solution[:, 0], solution[:, 1], color='black', label="spacecraft")
+    # plt.scatter(solution[-1, 0], solution[-1, 1], color='black')
     plt.grid()  # 格子をつける
-    plt.legend(bbox_to_anchor=(0.5, 1.025))  # loc="lower left"
+    plt.legend(bbox_to_anchor=(0.75, 0.9))  # loc="lower left"
     plt.gca().set_aspect('equal')  # グラフのアスペクト比を揃える
     plt.xlabel('x, km')
     plt.ylabel('y, km')
