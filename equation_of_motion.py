@@ -7,50 +7,6 @@ from planet_position import get_planet_coord
 
 
 
-# def orbital_equation_of_motion(x, t, GM=1.327e11):
-#     """
-#     軌道の運動方程式
-    
-#     Args:
-#         x(ndarray): 天体の位置, km
-#         t(ndarray): 時刻ステップの配列
-#         GM(float): 万有引力定数×中心天体の質量, km^3/s^(-2)
-#             Defaultは太陽質量の値
-#     Return:
-#         dxdt: 4次元ベクトル(位置と速度ベクトルの時間微分)
-#             1, 2成分: 位置ベクトルの時間微分(dr/dt)
-#             3, 4成分: 速度ベクトルの時間微分(dv/dt)
-#     """
-#     # 中心天体からの距離
-#     r_norm = np.sqrt(x[0]**2 + x[1]**2)
-#     # [dr_x/dt, dr_y/dt, dv_x/dt, dv_y/dt]
-#     dxdt = [x[2], 
-#             x[3], 
-#             -GM*x[0]/(r_norm**3),
-#             -GM*x[1]/(r_norm**3)]
-    
-#     return dxdt
-
-
-def orbital_equation_of_motion_twobody(x, t):
-    """
-    二体問題の運動方程式
-
-    Args:
-        x(ndarray): 天体の位置, km
-        t(ndarray): 時刻ステップの配列
-        GM(float): 万有引力定数×太陽の質量, km^3/s^(-2)
-    """
-    GM = 1.327e11 # 万有引力定数×中心天体の質量, km^3/s^(-2)
-    r_norm = np.sqrt(x[0]**2 + x[1]**2)	
-    dxdt = [x[2],
-            x[3],
-            -GM*x[0]/(r_norm**3),
-            -GM*x[1]/(r_norm**3)]
-    
-    return dxdt
-
-
 def orbital_equation_of_motion_nbody(
         x,
         t,
@@ -65,23 +21,14 @@ def orbital_equation_of_motion_nbody(
     
     Args:
         x(ndarray): 天体の位置, km
-        t(ndarray): 時刻ステップの配列
+        t(ndarray): 時刻ステップの配列, (day)
         dt_start(datetime): 打ち上げ時刻情報
         planet_list(list): 
         dict_GM(dict): 重力定数(km^3*s^{-2})の辞書
         dict_planet_radius(dict): 惑星半径(km)の辞書
-
-        GM(float): 万有引力定数×太陽の質量, km^3/s^(-2)
-        GM1(float): 万有引力定数×地球の質量, km^3/s^(-2)
-        period1(float): 地球の軌道周期, sec
-        a1(float): 地球の軌道長半径, km
     """
-    # # 条件設定
-    # GM = 1.327e11
-    # GM1 = 3.986e5
-
     # 各惑星位置の取得
-    passed_days = round(t / (24*60*60))
+    passed_days = t / (24*60*60)
     dt_this_step = dt_start + timedelta(days=passed_days)
     dict_planet_coord = get_planet_coord(dt_this_step, planet_list)
 
@@ -115,6 +62,29 @@ def orbital_equation_of_motion_nbody(
     dxdt[1] = x[3]
     dxdt[2] -= dict_GM['sun']*x[0] / (r_norm**3)
     dxdt[3] -= dict_GM['sun']*x[1] / (r_norm**3)
+
+    return dxdt
+
+
+
+"""
+Ref.
+"""
+def orbital_equation_of_motion_twobody(x, t):
+    """
+    二体問題の運動方程式
+
+    Args:
+        x(ndarray): 天体の位置, km
+        t(ndarray): 時刻ステップの配列
+        GM(float): 万有引力定数×太陽の質量, km^3/s^(-2)
+    """
+    GM = 1.327e11  # 万有引力定数×中心天体の質量, km^3/s^(-2)
+    r_norm = np.sqrt(x[0]**2 + x[1]**2)
+    dxdt = [x[2],
+            x[3],
+            -GM*x[0]/(r_norm**3),
+            -GM*x[1]/(r_norm**3)]
 
     return dxdt
 

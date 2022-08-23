@@ -4,12 +4,16 @@ from pathlib import Path
 import sys
 
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
+from astropy.time import Time
+from astropy.coordinates import get_body_barycentric
 
 from utils import transform_to_rotating_coordinate_system
 from equation_of_motion import orbital_equation_of_motion_twobody
 from equation_of_motion import orbital_equation_of_motion_nbody
+from planet_position import get_planet_coord_timeseries
 
 
 
@@ -18,6 +22,7 @@ def spacecraft_orbit(
         OUTPUT_PATH=None,
         v_inf=None,
         dt_start=None,
+        travel_days=None,
         t_twobody=None,
         t_Nbody=None,
         delta_t=None,
@@ -62,12 +67,55 @@ def spacecraft_orbit(
     # y成分, km/s
     v_sc_y = (2 * v_earth**2 - v_inf**2) / (2 * v_earth)
 
-    # 回転座標へ変換
-    omega, time = 2*np.pi / (1*365*24*60*60), np.array(0)
-    v_sc_x, v_sc_y = transform_to_rotating_coordinate_system(
-        x=v_sc_x, y=v_sc_y,
-        omega=omega, time=np.array(0),
-    )
+    """
+    0年〜{t_Nbody}年の間の軌道伝播(N体問題)
+        * 軌道伝播中の位置・速度に軌道制御(ΔV)を加える
+    """
+    # 初期の位置(km), 速度(km/s)
+    earth_coord_init = get_body_barycentric('earth', Time(dt_start))
+    _x_e, _y_e = np.array(earth_coord_init.x), np.array(earth_coord_init.y)
+    # x0 = np.array([_x_e + 2*config.dict_planet_radius['earth'], _y_e, -v_sc_x, v_sc_y])
+    x0 = np.array([_x_e + 3*config.dict_planet_radius['earth'], _y_e, 0., config.v_earth + v_inf])
+
+    # 0年〜{t_Nbody}年分を{travel_days}ステップで刻む
+    t_span_sec = np.arange(0, travel_days*24*60*60, 24*60*60, dtype=np.int64)
+    solution = odeint(orbital_equation_of_motion_nbody,
+                      x0, t_span_sec,
+                      args=(dt_start, planet_list, config.dict_GM, config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
+    
+    # 基準日からの飛行時間
+    dt_next = dt_start + timedelta(days=travel_days)
+    timeseries = pd.date_range(dt_start, dt_next, freq='D')
+    # 基準日から飛行時間での各惑星の座標
+    dict_planet_coord_timeseries = get_planet_coord_timeseries(timeseries, planet_list)
+    # 軌道の描画
+    fig = plt.figure(figsize=(6, 6))
+    # Sun
+    plt.scatter(0, 0, color='orange', s=200, label='Sun')
+    # Earthの初期値 _x_e, _y_e
+    plt.scatter(_x_e, _y_e, color='red')
+    # 各惑星
+    for _planet in dict_planet_coord_timeseries.keys():
+        _x = dict_planet_coord_timeseries[_planet]['x']
+        _y = dict_planet_coord_timeseries[_planet]['y']
+        # plot
+        plt.plot(_x, _y, label=_planet, linewidth=2)
+        # plt.scatter(_x[0], _y[0], color='black', s=40)  # initial point
+        plt.scatter(_x[-1], _y[-1], s=40)  # final point
+    # 
+    plt.plot(solution[:, 0], solution[:, 1], color='black', label="spacecraft")
+    plt.scatter(solution[-1, 0], solution[-1, 1], color='black')
+    plt.grid()  # 格子をつける
+    plt.legend(bbox_to_anchor=(0.5, 1.025))  # loc="lower left"
+    plt.gca().set_aspect('equal')  # グラフのアスペクト比を揃える
+    plt.xlabel('x, km')
+    plt.ylabel('y, km')
+    plt.savefig(OUTPUT_PATH / 'orbit-2.png')
+    plt.show()
+    plt.close(fig)
+
+    sys.exit()
+
 
     """
     0年〜{t_twobody}年の間の軌道伝播(太陽と探査機の二体問題)
@@ -95,43 +143,16 @@ def spacecraft_orbit(
                       x1, t_span_Nbody, 
                       args=(dt_start, planet_list, config.dict_GM, config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
 
-
-    # 地球の軌道
-    omega = 2*np.pi / (1*365*24*60*60)  # 2*pi / T
-    t_span_tot = np.concatenate([t_span_twobody, t_span_Nbody], axis=0)
-    x_e = r_earth*np.cos(omega*t_span_tot)
-    y_e = r_earth*np.sin(omega*t_span_tot)
-    vx_e = -omega*r_earth*np.sin(omega*t_span_tot)
-    vy_e = omega*r_earth*np.cos(omega*t_span_tot)
-
-
     """
     軌道の描画
     """
-    # 回転座標へ変換に必要な情報
-    omega = 2*np.pi / (1*365*24*60*60)
-
     fig = plt.figure(figsize=(6, 6))
     # Sun
     plt.scatter(0, 0, color='orange', s=200, label='Sun')
-    # Earth
-    # theta = np.linspace(0, 2*np.pi, 100)
-    # plt.plot(r_earth*np.cos(theta), r_earth*np.sin(theta), 
-    #          color='blue', linestyle='--', label="Earth")
-    plt.plot(x_e, y_e, color='blue', linestyle='--', label="Earth")
+    # Spacecraft
     # Spacecraft: 0 ~ {t_twobody}
-    # _x, _y = transform_to_rotating_coordinate_system(
-    #     x=sol_0to1[:, 0], y=sol_0to1[:, 1],
-    #     omega=omega, time=t_span_twobody,
-    # )
-    # plt.plot(_x, _y, color='red', label="two-body problem")
     plt.plot(sol_0to1[:, 0], sol_0to1[:, 1], color='red', label="two-body problem")
     # Spacecraft: 0 ~ {t_Nbody}
-    # _x, _y = transform_to_rotating_coordinate_system(
-    #     x=sol_1to2[:, 0], y=sol_1to2[:, 1],
-    #     omega=omega, time=t_span_Nbody,
-    # )
-    # plt.plot(_x, _y, color='green', label="N-body problem")
     plt.plot(sol_1to2[:, 0], sol_1to2[:, 1], color='green', label="N-body problem")
     plt.grid()  # 格子をつける
     plt.legend(bbox_to_anchor=(0.5, 1.025))  # loc="lower left"
