@@ -24,8 +24,8 @@ def main():
     v_inf = 5.0  # 5.0
     start_date = '2022-09-23'  # 地球でy=0となる時は開始日とする
     travel_days = [
-        91,
-        100,
+        89,
+        10,
     ]
     delta_V = [
         [0., 0.],  # Vx, Vy

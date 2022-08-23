@@ -68,11 +68,6 @@ def spacecraft_orbit(
     # x0 = np.array([_x_e + 1*config.dict_planet_radius['earth'], _y_e, -v_sc_x, v_sc_y])
     x0 = np.array([_x_e + 1*config.dict_planet_radius['earth'], _y_e, 0., 1.29*config.v_earth])
 
-    # # 0年〜{t_Nbody}年分を{travel_days}ステップで刻む
-    # t_span_sec = np.arange(0, travel_days*24*60*60, 24*60*60, dtype=np.int64)
-    # solution = odeint(orbital_equation_of_motion_nbody,
-    #                   x0, t_span_sec,
-    #                   args=(dt_start, planet_list, config.dict_GM, config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
 
     solutions = []
     for i, (_travel_days, _delta_V) in enumerate(zip(travel_days, delta_V)):
@@ -90,17 +85,16 @@ def spacecraft_orbit(
             # 軌道伝播された位置・速度に軌道制御(ΔV)を加える
             x0 = solution[-1, :] + [0, 0, _delta_V[0], _delta_V[1]]
 
-            t_span_sec = np.arange(_t, _travel_days*24*60*60, 24*60*60, dtype=np.int64)
+            t_span_sec = np.arange(_t, _t + _travel_days*24*60*60, 24*60*60, dtype=np.int64)
             solution = odeint(orbital_equation_of_motion_nbody,
                               x0, t_span_sec,
                               args=(dt_start, planet_list, config.dict_GM,
                                     config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
             solutions.append(solution)
             dt_next += timedelta(days=_travel_days)
+            _t = t_span_sec[-1]
 
     # 基準日からの飛行時間
-    print(sum(travel_days))
-    print(travel_days)
     dt_next = dt_start + timedelta(days=sum(travel_days))
     timeseries = pd.date_range(dt_start, dt_next, freq='D')
     # 基準日から飛行時間での各惑星の座標
@@ -127,55 +121,6 @@ def spacecraft_orbit(
     # plt.scatter(solution[-1, 0], solution[-1, 1], color='black')
     plt.grid()  # 格子をつける
     plt.legend(bbox_to_anchor=(0.75, 0.9))  # loc="lower left"
-    plt.gca().set_aspect('equal')  # グラフのアスペクト比を揃える
-    plt.xlabel('x, km')
-    plt.ylabel('y, km')
-    plt.savefig(OUTPUT_PATH / 'orbit-2.png')
-    plt.show()
-    plt.close(fig)
-
-    sys.exit()
-
-
-    """
-    0年〜{t_twobody}年の間の軌道伝播(太陽と探査機の二体問題)
-    Note: 探査機と地球の初期位置が一致しているため、
-          最初は太陽との二体問題で解かないと計算が発散する
-    """
-    x0 = np.array([r_earth, 0.0, -v_sc_x, v_sc_y])  # 位置(km), 速度(km/s)
-
-    num_step = int(t_twobody / delta_t)
-    t_span_twobody = np.linspace(0, t_twobody*365*24*60*60, num_step)
-    # (x, y, vx, vy) --> (time step, each coord and velocity components)
-    sol_0to1 = odeint(orbital_equation_of_motion_twobody, x0, t_span_twobody)
-
-    """
-    {t_twobody}年〜{t_Nbody}年の間の軌道伝播(N体問題)
-    """
-    # 軌道伝播された位置・速度に軌道制御(ΔV)を加える
-    x1 = sol_0to1[-1, :] + [0, 0, delta_Vx, delta_Vy]
-
-    num_step = int(t_Nbody / delta_t)
-    # tot_time = t_Nbody*365*24*60*60 - t_twobody*365*24*60*60  # (sec): year to sec
-    # {t_twobody}年〜{t_Nbody}年分を200ステップで刻む
-    t_span_Nbody = np.linspace(t_twobody*365*24*60*60, t_Nbody*365*24*60*60, num_step)
-    sol_1to2 = odeint(orbital_equation_of_motion_nbody,
-                      x1, t_span_Nbody, 
-                      args=(dt_start, planet_list, config.dict_GM, config.dict_planet_radius))  # argsの要素が1つの時は ","を忘れないこと
-
-    """
-    軌道の描画
-    """
-    fig = plt.figure(figsize=(6, 6))
-    # Sun
-    plt.scatter(0, 0, color='orange', s=200, label='Sun')
-    # Spacecraft
-    # Spacecraft: 0 ~ {t_twobody}
-    plt.plot(sol_0to1[:, 0], sol_0to1[:, 1], color='red', label="two-body problem")
-    # Spacecraft: 0 ~ {t_Nbody}
-    plt.plot(sol_1to2[:, 0], sol_1to2[:, 1], color='green', label="N-body problem")
-    plt.grid()  # 格子をつける
-    plt.legend(bbox_to_anchor=(0.5, 1.025))  # loc="lower left"
     plt.gca().set_aspect('equal')  # グラフのアスペクト比を揃える
     plt.xlabel('x, km')
     plt.ylabel('y, km')
