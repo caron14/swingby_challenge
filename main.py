@@ -1,6 +1,7 @@
 from datetime import datetime
 import os
 from pathlib import Path
+import shutil
 
 from config import Config
 from orbit import spacecraft_orbit
@@ -14,6 +15,10 @@ def main():
     OUTPUT_PATH = CWD_PATH / 'output'
     if not os.path.exists(OUTPUT_PATH):
         os.makedirs(OUTPUT_PATH)
+    else:
+        # 過去の結果を削除
+        shutil.rmtree(OUTPUT_PATH)
+        os.makedirs(OUTPUT_PATH)
 
     # 物理定数とそれから決まる定数値
     config = Config()
@@ -24,12 +29,12 @@ def main():
     v_inf = 5.0  # 5.0
     start_date = '2022-09-23'  # 地球でy=0となる時は開始日とする
     travel_days = [
-        89,
-        10,
+        73,
+        292,  # 292
     ]
     delta_V = [
         [0., 0.],  # Vx, Vy
-        [0.0055, 0.],
+        [-0.0055, 0.],  # [0.0055, 0.]
     ]
     planet_list = ['venus', 'earth', 'mars']
 
