@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 import shutil
 
-from config import Config
-from orbit import spacecraft_orbit
+from swingby.physics.constants import Config
+from swingby.core.simulation import spacecraft_orbit
 
 
 
