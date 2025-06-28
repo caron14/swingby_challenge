@@ -27,6 +27,9 @@ uv run python main.py
 # Or use the installed script
 uv run swingby-sim
 
+# Pluto mission example
+uv run python pluto_mission.py
+
 # Run tests
 uv run pytest
 
