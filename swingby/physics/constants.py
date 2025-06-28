@@ -51,5 +51,3 @@ class Config:
         "neptune": 24622,
         "pluto": 1185,
     }
-
-

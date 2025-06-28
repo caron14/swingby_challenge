@@ -5,11 +5,12 @@ Core simulation functionality for spacecraft orbital mechanics.
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
-from scipy.integrate import odeint
-from astropy.time import Time
 from astropy.coordinates import get_body_barycentric
+from astropy.time import Time
+from scipy.integrate import odeint
 
 from ..physics.constants import Config
 from ..physics.dynamics import orbital_equation_of_motion_nbody
@@ -37,10 +38,10 @@ class OrbitSimulation:
         """
         self.config = config or Config()
         self.plotter = OrbitPlotter()
-        self.solutions = []
-        self.timeseries = None
-        self.planet_coordinates = None
-        self.spacecraft_earth_distance = None
+        self.solutions: list[np.ndarray] = []
+        self.timeseries: Optional[pd.DatetimeIndex] = None
+        self.planet_coordinates: Optional[dict[str, dict[str, np.ndarray]]] = None
+        self.spacecraft_earth_distance: Optional[np.ndarray] = None
 
     def calculate_initial_velocity(self, v_inf: float) -> Tuple[float, float]:
         """
@@ -179,7 +180,7 @@ class OrbitSimulation:
 
     def _calculate_spacecraft_earth_distance(self) -> None:
         """Calculate distance between spacecraft and Earth over time."""
-        if "earth" in self.planet_coordinates:
+        if self.planet_coordinates and "earth" in self.planet_coordinates:
             earth_x = self.planet_coordinates["earth"]["x"]
             earth_y = self.planet_coordinates["earth"]["y"]
 
@@ -206,8 +207,12 @@ class OrbitSimulation:
         output_path.mkdir(exist_ok=True)
 
         # Save orbit plot
+        if self.planet_coordinates is None:
+            raise ValueError("Planet coordinates are not available. Ensure simulation has been run successfully.")
         self.plotter.plot_orbit(
-            self.solutions, self.planet_coordinates, save_path=output_path / "orbit.png"
+            self.solutions,
+            self.planet_coordinates,
+            save_path=output_path / "orbit.png",
         )
 
         # Save distance plot
@@ -217,7 +222,6 @@ class OrbitSimulation:
                 self.spacecraft_earth_distance,
                 save_path=output_path / "distance.png",
             )
-
 
 
 def spacecraft_orbit(

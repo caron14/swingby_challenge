@@ -22,5 +22,3 @@ def transform_to_rotating_coordinate_system(
     y_rot = x * np.sin(phase) + y * np.cos(phase)
 
     return x_rot, y_rot
-
-

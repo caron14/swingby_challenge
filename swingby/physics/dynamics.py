@@ -67,5 +67,3 @@ def orbital_equation_of_motion_nbody(
     dxdt[3] -= dict_GM["sun"] * x[1] / (r_norm**3)
 
     return dxdt
-
-

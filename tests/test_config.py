@@ -1,4 +1,5 @@
 import pytest
+
 from swingby.physics.constants import Config
 
 

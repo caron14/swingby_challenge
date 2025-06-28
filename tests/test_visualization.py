@@ -1,8 +1,10 @@
-import pytest
-import numpy as np
-import pandas as pd
 from datetime import datetime, timedelta
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+
 from swingby.visualization.plots import OrbitPlotter
 
 
@@ -42,6 +44,3 @@ class TestOrbitPlotter:
 
         # Should not raise an exception
         plotter.plot_distance(timeseries, distance)
-
-
-
