@@ -14,17 +14,43 @@ This project uses `uv` for dependency management. To set up the environment:
 # Install dependencies
 uv sync
 
-# Run the simulation
+# Add development dependencies (for testing and code quality)
+uv add --dev pytest pytest-cov black isort flake8 mypy
+```
+
+## Quick Start
+
+```bash
+# Run the main simulation
 uv run python main.py
+
+# Or use the installed script
+uv run swingby-sim
+
+# Run tests
+uv run pytest
+
+# Run tests with coverage
+uv run pytest --cov=.
 ```
 
 ## Dependencies
 
-- numpy: Numerical computations
-- matplotlib: Plotting and visualization
-- scipy: Scientific computing and ODE integration
-- astropy: Astronomical calculations and ephemeris data
-- pandas: Data manipulation
+### Core Dependencies
+- **numpy**: Numerical computations and array operations
+- **matplotlib**: Plotting and visualization
+- **scipy**: Scientific computing and ODE integration
+- **astropy**: Astronomical calculations and ephemeris data (DE432s)
+- **pandas**: Data manipulation and time series
+- **jplephem**: JPL planetary ephemeris data
+
+### Development Dependencies
+- **pytest**: Testing framework
+- **pytest-cov**: Test coverage reporting
+- **black**: Code formatting
+- **isort**: Import sorting
+- **flake8**: Code linting
+- **mypy**: Static type checking
 
 ## Usage
 
@@ -43,8 +69,65 @@ The simulation generates:
 
 ## Architecture
 
+The codebase features both legacy and modern modular architecture:
+
+### Modern Package Structure (swingby/)
+- **swingby.core.simulation**: Main `OrbitSimulation` class and simulation orchestration
+- **swingby.physics**: Physical modeling (constants, N-body dynamics)
+- **swingby.utils**: Utility functions (coordinate transforms, ephemeris data)
+- **swingby.visualization**: Plotting and output generation
+
+### Legacy Files (for backward compatibility)
 - **config.py**: Physical constants and planetary parameters
-- **orbit.py**: Main simulation engine with orbital integration
+- **orbit.py**: Original simulation engine
 - **equation_of_motion.py**: N-body gravitational dynamics
-- **planet_position.py**: Real planetary position calculations using astropy
+- **planet_position.py**: Planetary position calculations
 - **utils.py**: Coordinate system transformations
+
+### Key Features
+- **N-body Dynamics**: Real planetary gravitational interactions
+- **Real Ephemeris**: Uses JPL DE432s ephemeris data via astropy
+- **Collision Detection**: Prevents spacecraft surface impacts
+- **Modular Delta-V**: Instantaneous velocity changes between segments
+- **Comprehensive Testing**: 29 tests covering numerical accuracy and integration
+
+## Development
+
+### Running Tests
+```bash
+# Run all tests
+uv run pytest
+
+# Run specific test file
+uv run pytest tests/test_simulation.py
+
+# Run specific test
+uv run pytest tests/test_simulation.py::TestOrbitSimulation::test_calculate_initial_velocity
+```
+
+### Code Quality
+```bash
+# Check formatting
+uv run black --check .
+
+# Format code
+uv run black .
+
+# Check imports
+uv run isort --check-only .
+
+# Sort imports
+uv run isort .
+
+# Lint code (excluding virtual environment)
+uv run flake8 . --exclude=.venv
+
+# Type checking
+uv run mypy .
+```
+
+### Testing Notes
+- All 29 tests should pass with current implementation
+- Modern `swingby/` package has 87-94% test coverage
+- Legacy files have 0% coverage but remain for compatibility
+- Coordinate transformations use standard counter-clockwise rotation matrices
