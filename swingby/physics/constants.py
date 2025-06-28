@@ -53,7 +53,3 @@ class Config:
     }
 
 
-if __name__ == "__main__":
-    config = Config()
-    for key in config.dict_GM.keys():
-        print(f"{key}: {config.dict_GM[key]}")

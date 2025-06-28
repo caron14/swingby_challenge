@@ -218,27 +218,6 @@ class OrbitSimulation:
                 save_path=output_path / "distance.png",
             )
 
-    def get_final_position(self) -> Optional[np.ndarray]:
-        """
-        Get the final spacecraft position.
-
-        Returns:
-            Final position [x, y] in km, or None if no simulation results
-        """
-        if not self.solutions:
-            return None
-        return self.solutions[-1][-1, :2]
-
-    def get_final_velocity(self) -> Optional[np.ndarray]:
-        """
-        Get the final spacecraft velocity.
-
-        Returns:
-            Final velocity [vx, vy] in km/s, or None if no simulation results
-        """
-        if not self.solutions:
-            return None
-        return self.solutions[-1][-1, 2:]
 
 
 def spacecraft_orbit(
