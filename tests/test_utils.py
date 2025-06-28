@@ -10,9 +10,9 @@ class TestUtils:
         y = np.array([3.0, 4.0])
         omega = 1.0
         time = np.array([0.0, 0.0])
-        
+
         x_rot, y_rot = transform_to_rotating_coordinate_system(x, y, omega, time)
-        
+
         # At t=0, rotation should be identity
         np.testing.assert_array_almost_equal(x_rot, x)
         np.testing.assert_array_almost_equal(y_rot, y)
@@ -22,10 +22,10 @@ class TestUtils:
         x = np.array([1.0])
         y = np.array([0.0])
         omega = 1.0
-        time = np.array([np.pi/2])  # Quarter rotation
-        
+        time = np.array([np.pi / 2])  # Quarter rotation
+
         x_rot, y_rot = transform_to_rotating_coordinate_system(x, y, omega, time)
-        
+
         # After π/2 rotation, (1,0) should become (0,1)
         np.testing.assert_array_almost_equal(x_rot, [0.0], decimal=10)
         np.testing.assert_array_almost_equal(y_rot, [1.0], decimal=10)
@@ -36,9 +36,9 @@ class TestUtils:
         y = np.array([0.0])
         omega = 1.0
         time = np.array([np.pi])  # Half rotation
-        
+
         x_rot, y_rot = transform_to_rotating_coordinate_system(x, y, omega, time)
-        
+
         # After π rotation, (1,0) should become (-1,0)
         np.testing.assert_array_almost_equal(x_rot, [-1.0], decimal=10)
         np.testing.assert_array_almost_equal(y_rot, [0.0], decimal=10)
@@ -49,12 +49,12 @@ class TestUtils:
         y = np.array([0.0, 0.0])
         omega = 1.0
         time = np.array([0.0, np.pi])
-        
+
         x_rot, y_rot = transform_to_rotating_coordinate_system(x, y, omega, time)
-        
+
         # First point should remain (1,0), second should become (-1,0)
         expected_x = np.array([1.0, -1.0])
         expected_y = np.array([0.0, 0.0])
-        
+
         np.testing.assert_array_almost_equal(x_rot, expected_x, decimal=10)
         np.testing.assert_array_almost_equal(y_rot, expected_y, decimal=10)

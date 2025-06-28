@@ -1,12 +1,12 @@
 import numpy as np
 
 
-
 def transform_to_rotating_coordinate_system(
-        x=None, y=None,
-        omega=None,
-        time=None,
-    ):
+    x=None,
+    y=None,
+    omega=None,
+    time=None,
+):
     """
     回転座標系へ変換
 
@@ -18,11 +18,10 @@ def transform_to_rotating_coordinate_system(
     phase = float(omega) * np.array(time)
 
     # 変換 (標準的な反時計回り回転行列)
-    x_rot = x*np.cos(phase) - y*np.sin(phase)
-    y_rot = x*np.sin(phase) + y*np.cos(phase)
+    x_rot = x * np.cos(phase) - y * np.sin(phase)
+    y_rot = x * np.sin(phase) + y * np.cos(phase)
 
     return x_rot, y_rot
-
 
 
 if __name__ == "__main__":

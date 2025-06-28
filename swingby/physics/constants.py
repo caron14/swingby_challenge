@@ -1,11 +1,11 @@
 import numpy as np
 
 
-
 class Config:
     """
     物理定数とそれから決まる定数値
     """
+
     # 地球の公転軌道半径, km
     r_earth = 149597870.7  # 1天文単位を設定
 
@@ -24,34 +24,33 @@ class Config:
     """
     G = 6.6743e-11 * 1e-9  # m^{-3} --> km^{-3}
     dict_GM = {
-        'sun': 1.327e11,
-        'mercury': G * 330.2e21,
-        'venus': G * 4868.5e21,
-        'earth': 398600.4354360959,
-        'mars': G * 641.85e21,
-        'jupiter': G * 1.8986e27,
-        'saturn': G * 568460e21,
-        'uranus': G * 86832e21,
-        'neptune': G * 102430e21,
-        'pluto': G * 13.105e21,
+        "sun": 1.327e11,
+        "mercury": G * 330.2e21,
+        "venus": G * 4868.5e21,
+        "earth": 398600.4354360959,
+        "mars": G * 641.85e21,
+        "jupiter": G * 1.8986e27,
+        "saturn": G * 568460e21,
+        "uranus": G * 86832e21,
+        "neptune": G * 102430e21,
+        "pluto": G * 13.105e21,
     }
 
     """
     惑星の平均半径(km)
     """
     dict_planet_radius = {
-        'sun': 696000,
-        'mercury': 2439.7,
-        'venus': 6051.8,
-        'earth': 6371,
-        'mars': 3390,
-        'jupiter': 69911,
-        'saturn': 58232,
-        'uranus': 25362,
-        'neptune': 24622,
-        'pluto': 1185,
+        "sun": 696000,
+        "mercury": 2439.7,
+        "venus": 6051.8,
+        "earth": 6371,
+        "mars": 3390,
+        "jupiter": 69911,
+        "saturn": 58232,
+        "uranus": 25362,
+        "neptune": 24622,
+        "pluto": 1185,
     }
-
 
 
 if __name__ == "__main__":
