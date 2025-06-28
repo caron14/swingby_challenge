@@ -41,6 +41,7 @@ class OrbitSimulation:
         self.timeseries = None
         self.planet_coordinates = None
         self.spacecraft_earth_distance = None
+        self.total_delta_v = None
 
     def calculate_initial_velocity(self, v_inf: float) -> Tuple[float, float]:
         """
@@ -176,6 +177,7 @@ class OrbitSimulation:
 
         # Calculate spacecraft-Earth distance
         self._calculate_spacecraft_earth_distance()
+        self.total_delta_v = self._calculate_total_delta_v(delta_V)
 
     def _calculate_spacecraft_earth_distance(self) -> None:
         """Calculate distance between spacecraft and Earth over time."""
@@ -217,6 +219,12 @@ class OrbitSimulation:
                 self.spacecraft_earth_distance,
                 save_path=output_path / "distance.png",
             )
+
+    def _calculate_total_delta_v(self, delta_v: List[List[float]]) -> float:
+        """Return the total delta-V magnitude for the mission."""
+        delta_v_array = np.array(delta_v, dtype=float)
+        norms = np.linalg.norm(delta_v_array, axis=1)
+        return float(np.sum(norms))
 
 
 

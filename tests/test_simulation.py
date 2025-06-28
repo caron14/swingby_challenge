@@ -61,4 +61,16 @@ class TestOrbitSimulation:
         assert sim.timeseries is not None
         assert sim.planet_coordinates is not None
 
+    def test_total_delta_v_calculation(self):
+        sim = OrbitSimulation()
+        v_inf = 5.0
+        dt_start = datetime(2022, 1, 1)
+        travel_days = [10, 20]
+        delta_V = [[0.0, 0.0], [0.3, 0.4]]
+        planet_list = []
+
+        sim.run_simulation(v_inf, dt_start, travel_days, delta_V, planet_list)
+
+        assert pytest.approx(sim.total_delta_v, rel=1e-6) == 0.5
+
 
