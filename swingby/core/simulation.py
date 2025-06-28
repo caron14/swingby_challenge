@@ -207,7 +207,8 @@ class OrbitSimulation:
         output_path.mkdir(exist_ok=True)
 
         # Save orbit plot
-        assert self.planet_coordinates is not None
+        if self.planet_coordinates is None:
+            raise ValueError("Planet coordinates are not available. Ensure simulation has been run successfully.")
         self.plotter.plot_orbit(
             self.solutions,
             self.planet_coordinates,
