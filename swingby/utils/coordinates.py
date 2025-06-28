@@ -17,9 +17,9 @@ def transform_to_rotating_coordinate_system(
     """
     phase = float(omega) * np.array(time)
 
-    # 変換
-    x_rot = x * np.cos(phase) + y * np.sin(phase)
-    y_rot = -x * np.sin(phase) + y * np.cos(phase)
+    # 変換 (標準的な反時計回り回転行列)
+    x_rot = x * np.cos(phase) - y * np.sin(phase)
+    y_rot = x * np.sin(phase) + y * np.cos(phase)
 
     return x_rot, y_rot
 

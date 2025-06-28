@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 
-from planet_position import get_planet_coord
+from ..utils.ephemeris import get_planet_coord
 
 
 def orbital_equation_of_motion_nbody(
