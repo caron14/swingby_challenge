@@ -69,26 +69,3 @@ def orbital_equation_of_motion_nbody(
     return dxdt
 
 
-"""
-Ref.
-"""
-
-
-def orbital_equation_of_motion_twobody(x, t):
-    """
-    二体問題の運動方程式
-
-    Args:
-        x(ndarray): 天体の位置, km
-        t(ndarray): 時刻ステップの配列
-        GM(float): 万有引力定数×太陽の質量, km^3/s^(-2)
-    """
-    GM = 1.327e11  # 万有引力定数×中心天体の質量, km^3/s^(-2)
-    r_norm = np.sqrt(x[0] ** 2 + x[1] ** 2)
-    dxdt = [x[2], x[3], -GM * x[0] / (r_norm**3), -GM * x[1] / (r_norm**3)]
-
-    return dxdt
-
-
-if __name__ == "__main__":
-    pass

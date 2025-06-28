@@ -81,37 +81,3 @@ def get_planet_coord_timeseries(timeseries, planet_list):
     return dict_planet_coord_timeseries
 
 
-if __name__ == "__main__":
-    # currend work directory
-    CWD_PATH = Path(os.path.dirname(__file__))
-    # 結果出力フォルダ: 存在しない場合は作成する
-    OUTPUT_PATH = CWD_PATH / "output"
-    if not os.path.exists(OUTPUT_PATH):
-        os.makedirs(OUTPUT_PATH)
-
-    # 期間を指定と取得
-    start, end = "2022-01-01", "2022-08-01"
-    timeseries = pd.date_range(start, end, freq="D")
-    delta_t = 24 * 60 * 60
-    # 惑星リスト
-    planet_list = ["venus", "earth", "mars"]
-
-    # 辞書形式で指定の惑星と時系列情報を取得
-    dict_planet_coord_timeseries = get_planet_coord_timeseries(timeseries, planet_list)
-    time_list = np.arange(0, delta_t * len(timeseries), len(timeseries)).reshape(-1, 1)
-
-    #  指摘期間の惑星軌道を描画
-    fig = plt.figure(figsize=(8, 8))
-    ax = plt.subplot(1, 1, 1)
-    plt.scatter(0, 0, color="orange", s=200, label="Sun")
-    for _planet in dict_planet_coord_timeseries.keys():
-        x = dict_planet_coord_timeseries[_planet]["x"]
-        y = dict_planet_coord_timeseries[_planet]["y"]
-        plt.plot(x, y, label=_planet, linewidth=2)
-        plt.scatter(x[0], y[0], color="black", s=40)  # initial point
-        plt.scatter(x[-1], y[-1], color="red", s=40)  # final point
-    plt.legend()
-    plt.grid()
-    plt.gca().set_aspect("equal")  # グラフのアスペクト比を揃える
-    plt.savefig(OUTPUT_PATH / "test_planet_orbit.png")
-    plt.close(fig)

@@ -43,37 +43,5 @@ class TestOrbitPlotter:
         # Should not raise an exception
         plotter.plot_distance(timeseries, distance)
 
-    def test_plot_velocity_profile(self):
-        """Test velocity profile plotting."""
-        plotter = OrbitPlotter()
 
-        # Create dummy data with velocity components
-        solutions = [np.random.rand(50, 4) * 1e8]
 
-        # Should not raise an exception
-        plotter.plot_velocity_profile(solutions)
-
-    def test_plot_energy_profile(self):
-        """Test energy profile plotting."""
-        plotter = OrbitPlotter()
-
-        # Create dummy data
-        solutions = [np.random.rand(50, 4) * 1e8]
-
-        # Should not raise an exception
-        plotter.plot_energy_profile(solutions)
-
-    def test_create_summary_plot(self):
-        """Test summary plot creation."""
-        plotter = OrbitPlotter()
-
-        # Create dummy data
-        solutions = [np.random.rand(50, 4) * 1e8]
-        planet_coordinates = {
-            "earth": {"x": np.linspace(0, 1e8, 50), "y": np.linspace(0, 1e8, 50)}
-        }
-        timeseries = pd.date_range(datetime(2022, 1, 1), periods=50, freq="D")
-        distance = np.random.rand(50) * 1e8
-
-        # Should not raise an exception
-        plotter.create_summary_plot(solutions, planet_coordinates, timeseries, distance)

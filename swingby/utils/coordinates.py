@@ -24,5 +24,3 @@ def transform_to_rotating_coordinate_system(
     return x_rot, y_rot
 
 
-if __name__ == "__main__":
-    pass
