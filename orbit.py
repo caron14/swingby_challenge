@@ -126,14 +126,12 @@ def spacecraft_orbit(
     plt.xlabel('x, km')
     plt.ylabel('y, km')
     plt.savefig(OUTPUT_PATH / 'orbit.png')
-    plt.show()
     plt.close(fig)
 
     # 探査機と地球間の距離
     fig = plt.figure(figsize=(6, 6))
     plt.plot(timeseries, distance, color='black')
     plt.savefig(OUTPUT_PATH / 'distance.png')
-    plt.show()
     plt.close(fig)
 
 

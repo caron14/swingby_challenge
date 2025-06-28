@@ -112,5 +112,4 @@ if __name__ == "__main__":
     plt.grid()
     plt.gca().set_aspect('equal')  # グラフのアスペクト比を揃える
     plt.savefig(OUTPUT_PATH / 'test_planet_orbit.png')
-    plt.show()
     plt.close(fig)
