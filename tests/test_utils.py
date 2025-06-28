@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from swingby.utils.coordinates import transform_to_rotating_coordinate_system
 
 

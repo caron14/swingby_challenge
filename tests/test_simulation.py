@@ -1,6 +1,8 @@
-import pytest
-import numpy as np
 from datetime import datetime
+
+import numpy as np
+import pytest
+
 from swingby.core.simulation import OrbitSimulation
 from swingby.physics.constants import Config
 
@@ -60,5 +62,3 @@ class TestOrbitSimulation:
         assert len(sim.solutions) == 2
         assert sim.timeseries is not None
         assert sim.planet_coordinates is not None
-
-

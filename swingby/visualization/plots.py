@@ -4,9 +4,10 @@ Visualization and plotting functionality for orbital mechanics simulation.
 
 from pathlib import Path
 from typing import Dict, List, Optional, Union
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 
 class OrbitPlotter:
@@ -118,10 +119,3 @@ class OrbitPlotter:
             plt.show()
         else:
             plt.close(fig)
-
-
-
-
-
-
-

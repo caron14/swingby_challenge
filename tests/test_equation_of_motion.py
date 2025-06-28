@@ -1,13 +1,13 @@
-import pytest
-import numpy as np
 from datetime import datetime
-from swingby.physics.dynamics import orbital_equation_of_motion_nbody
+
+import numpy as np
+import pytest
+
 from swingby.physics.constants import Config
+from swingby.physics.dynamics import orbital_equation_of_motion_nbody
 
 
 class TestEquationOfMotion:
-
-
 
     def test_nbody_equation_format(self):
         """Test that n-body equation returns correct format."""
@@ -15,7 +15,7 @@ class TestEquationOfMotion:
         x = np.array([1.0, 0.0, 0.0, 1.0])
         t = 0.0
         dt_start = datetime(2022, 1, 1)
-        planet_list = []
+        planet_list: list[str] = []
 
         result = orbital_equation_of_motion_nbody(
             x, t, dt_start, planet_list, config.dict_GM, config.dict_planet_radius
@@ -31,7 +31,7 @@ class TestEquationOfMotion:
         x = np.array([1.0, 0.0, 0.0, 0.0])
         t = 0.0
         dt_start = datetime(2022, 1, 1)
-        planet_list = []
+        planet_list: list[str] = []
 
         result = orbital_equation_of_motion_nbody(
             x, t, dt_start, planet_list, config.dict_GM, config.dict_planet_radius

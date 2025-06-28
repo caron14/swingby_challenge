@@ -1,10 +1,10 @@
-from datetime import datetime
 import os
-from pathlib import Path
 import shutil
+from datetime import datetime
+from pathlib import Path
 
-from swingby.physics.constants import Config
 from swingby.core.simulation import spacecraft_orbit
+from swingby.physics.constants import Config
 
 
 def main():
