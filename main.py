@@ -26,16 +26,20 @@ def main():
     実験条件
     """
     v_inf = 5.0  # 5.0
-    start_date = "2022-09-23"  # 地球でy=0となる時は開始日とする
+    start_date = "2025-01-01"  # Adjusted start date for better alignment
     travel_days = [
-        73,
-        292,  # 292
+        150,  # Earth to Venus
+        280,  # Venus to Mars
+        620,  # Mars to Jupiter
+        2900, # Jupiter to Pluto (long travel time)
     ]
     delta_V = [
-        [0.0, 0.0],  # Vx, Vy
-        [-0.0055, 0.0],  # [0.0055, 0.]
+        [0.0, 0.0],  # Earth to Venus (initial launch, no delta_V here)
+        [0.5, -0.5],  # Venus to Mars
+        [-0.75, 0.35],  # Mars to Jupiter
+        [0.55, 0.15],  # Jupiter to Pluto
     ]
-    planet_list = ["venus", "earth", "mars"]
+    planet_list = ["venus", "mars", "jupiter", "pluto"]
 
     """
     探査機の軌道伝搬の計算
