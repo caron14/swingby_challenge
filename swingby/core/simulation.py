@@ -208,7 +208,9 @@ class OrbitSimulation:
 
         # Save orbit plot
         if self.planet_coordinates is None:
-            raise ValueError("Planet coordinates are not available. Ensure simulation has been run successfully.")
+            raise ValueError(
+                "Planet coordinates are not available. Ensure simulation has been run successfully."
+            )
         self.plotter.plot_orbit(
             self.solutions,
             self.planet_coordinates,
