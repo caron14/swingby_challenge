@@ -44,7 +44,7 @@ class OrbitSimulation:
 
     def calculate_initial_velocity(self, v_inf: float) -> Tuple[float, float]:
         """
-        Calculate initial spacecraft velocity components.
+        Calculate initial spacecraft velocity components for escape trajectory.
 
         Args:
             v_inf: Spacecraft velocity relative to Earth (km/s)
@@ -54,10 +54,10 @@ class OrbitSimulation:
         """
         v_earth = self.config.v_earth
 
-        # x成分, km/s
-        v_sc_x = np.sqrt(4 * v_earth**2 - v_inf**2) * v_inf / (2 * v_earth)
-        # y成分, km/s
-        v_sc_y = (2 * v_earth**2 - v_inf**2) / (2 * v_earth)
+        # 高エネルギー脱出軌道用の修正計算
+        # 地球軌道速度 + 脱出用余剰速度
+        v_sc_x = -(v_earth + v_inf)  # 負方向で高速脱出
+        v_sc_y = v_inf * 0.5  # y成分で軌道調整
 
         return v_sc_x, v_sc_y
 
@@ -81,7 +81,7 @@ class OrbitSimulation:
 
         # Initial state: position offset from Earth + velocity
         x0 = np.array(
-            [x_e + 1 * self.config.dict_planet_radius["earth"], y_e, -v_sc_x, v_sc_y]
+            [x_e + 1 * self.config.dict_planet_radius["earth"], y_e, v_sc_x, v_sc_y]
         )
 
         return x0
